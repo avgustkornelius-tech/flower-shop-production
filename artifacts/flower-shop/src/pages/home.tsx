@@ -17,7 +17,7 @@ const featuredProducts = [
     id: 2,
     name: "Букет «Солнечный день»",
     price: 2800,
-    imageUrl: "https://picsum.photos/seed/flower2/400/500",
+    imageUrl: "https://placehold.co/400x500/FFB6C1/000000?text=Pink+Bouquet",
     category: "Подсолнухи",
     inStock: true,
     isFeatured: true
