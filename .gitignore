@@ -43,3 +43,18 @@ Thumbs.db
 
 .github/instructions/nx.instructions.md
 
+# Replit leftovers
+.pythonlibs/
+.agents/
+.replit
+.replitignore
+replit.md
+**/.replit-artifact/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+venv/
+.venv/

@@ -1,169 +1,47 @@
-import { useState } from "react";
-import { ProductCard } from "@/components/product-card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Search, SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { mockProducts, mockSummary } from "../data/mock-products";
-
 export default function Catalog() {
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [category, setCategory] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("popular");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000]);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    const timer = setTimeout(() => {
-      setDebouncedSearch(e.target.value);
-    }, 500);
-    return () => clearTimeout(timer);
-  };
-
-  const summary = mockSummary;
-
-  const filteredProducts = mockProducts.filter(product => {
-    const matchesSearch = !debouncedSearch || product.name.toLowerCase().includes(debouncedSearch.toLowerCase());
-    const matchesCategory = category === "all" || product.category === category;
-    const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-    return matchesSearch && matchesCategory && matchesPrice;
-  });
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === "price_asc") return a.price - b.price;
-    if (sortBy === "price_desc") return b.price - a.price;
-    if (sortBy === "name") return a.name.localeCompare(b.name);
-    return 0;
-  });
-
-  const products = sortedProducts;
-  const isLoading = false;
-
-  const FilterContent = () => (
-    <div className="space-y-8">
-      <div>
-        <h4 className="font-serif text-lg font-medium mb-4">Категория</h4>
-        <div className="space-y-2">
-          <button
-            onClick={() => setCategory("all")}
-            className={`block text-left w-full px-3 py-2 text-sm transition-colors ${
-              category === "all" ? "bg-accent/50 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/20"
-            }`}
-          >
-            Все букеты
-          </button>
-          {summary?.categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setCategory(cat)}
-              className={`block text-left w-full px-3 py-2 text-sm transition-colors uppercase tracking-wider ${
-                category === cat ? "bg-accent/50 text-primary font-medium" : "text-muted-foreground hover:bg-secondary/20"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h4 className="font-serif text-lg font-medium mb-4">Цена</h4>
-        <Slider
-          defaultValue={[0, 20000]}
-          max={20000}
-          step={500}
-          value={[priceRange[0], priceRange[1]]}
-          onValueChange={(val) => setPriceRange([val[0], val[1]])}
-          className="mb-4"
-        />
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>{priceRange[0]} ₽</span>
-          <span>{priceRange[1]} ₽</span>
-        </div>
-      </div>
-    </div>
-  );
+  const products = [
+    {
+      id: 1,
+      name: "Букет «Розовая мечта»",
+      price: 3500,
+      imageUrl: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=400"
+    },
+    {
+      id: 2,
+      name: "Букет «Солнечный день»",
+      price: 2800,
+      imageUrl: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400"
+    },
+    {
+      id: 3,
+      name: "Букет «Весенний сад»",
+      price: 4200,
+      imageUrl: "https://images.unsplash.com/photo-1524386416438-98b9b2d4b433?w=400"
+    }
+  ];
 
   return (
     <div className="w-full py-12 px-4 md:px-6 container mx-auto">
       <div className="mb-12">
         <h1 className="font-serif text-5xl mb-4">Каталог</h1>
-        <p className="text-muted-foreground text-lg max-w-2xl">
-          Свежие авторские букеты для любого повода.
-        </p>
+        <p className="text-muted-foreground text-lg">Свежие авторские букеты</p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-12">
-        <aside className="hidden lg:block w-64 shrink-0">
-          <FilterContent />
-        </aside>
-
-        <div className="flex-1 space-y-8">
-          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-            <div className="relative w-full sm:max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                type="search"
-                placeholder="Поиск букетов..."
-                className="pl-10 rounded-none border-border/50 bg-white"
-                value={search}
-                onChange={handleSearch}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {products.map(product => (
+          <div key={product.id} className="group block">
+            <div className="aspect-[3/4] overflow-hidden bg-secondary/10 mb-4 border border-border/50">
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="object-cover w-full h-full"
               />
             </div>
-
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="lg:hidden rounded-none flex-1">
-                    <SlidersHorizontal className="w-4 h-4 mr-2" />
-                    Фильтры
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left">
-                  <SheetHeader>
-                    <SheetTitle className="font-serif text-2xl text-left mb-6">Фильтры</SheetTitle>
-                  </SheetHeader>
-                  <FilterContent />
-                </SheetContent>
-              </Sheet>
-
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-[200px] rounded-none bg-white">
-                  <SelectValue placeholder="Сортировка" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="popular">По популярности</SelectItem>
-                  <SelectItem value="price_asc">Сначала дешевле</SelectItem>
-                  <SelectItem value="price_desc">Сначала дороже</SelectItem>
-                  <SelectItem value="name">По названию</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <h3 className="font-serif text-xl mb-1">{product.name}</h3>
+            <p className="text-lg font-medium">{product.price.toLocaleString('ru-RU')} ₽</p>
           </div>
-
-          {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="space-y-4">
-                  <Skeleton className="w-full aspect-[3/4] rounded-none" />
-                  <Skeleton className="h-6 w-2/3 rounded-none" />
-                  <Skeleton className="h-4 w-1/3 rounded-none" />
-                </div>
-              ))}
-            </div>
-          ) : products?.length === 0 ? (
-            <div className="py-24 text-center border border-border bg-white">
-              <h3 className="font-serif text-2xl mb-2">Ничего не найдено</h3>
-              <p className="text-muted-foreground mb-6">Попробуйте изменить параметры поиска или фильтры</p>
-              <Button
-                variant="outline"
-                className="rounded-none"
-                onClick={() => {
-                  setSearch("");
-                  setDebouncedSearch("");
-                  setCategory("all");
-                  set
+        ))}
+      </div>
+    </div>
+  );
+}
