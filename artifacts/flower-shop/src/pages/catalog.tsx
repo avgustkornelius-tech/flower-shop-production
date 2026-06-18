@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useListProducts, useGetCatalogSummary, getListProductsQueryKey, getGetCatalogSummaryQueryKey } from "@workspace/api-client-react";
 import { ProductCard } from "@/components/product-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { mockProducts, mockSummary } from "../data/mock-products";
 
 export default function Catalog() {
   const [search, setSearch] = useState("");
@@ -16,7 +16,6 @@ export default function Catalog() {
   const [sortBy, setSortBy] = useState<string>("popular");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000]);
 
-  // Handle search debounce manually for simplicity
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     const timer = setTimeout(() => {
@@ -25,21 +24,24 @@ export default function Catalog() {
     return () => clearTimeout(timer);
   };
 
-  const { data: summary } = useGetCatalogSummary({
-    query: { queryKey: getGetCatalogSummaryQueryKey() }
+  const summary = mockSummary;
+  
+  const filteredProducts = mockProducts.filter(product => {
+    const matchesSearch = !debouncedSearch || product.name.toLowerCase().includes(debouncedSearch.toLowerCase());
+    const matchesCategory = category === "all" || product.category === category;
+    const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
+    return matchesSearch && matchesCategory && matchesPrice;
   });
 
-  const queryParams = {
-    ...(category !== "all" && { category }),
-    ...(debouncedSearch && { search: debouncedSearch }),
-    ...(sortBy !== "popular" && { sortBy: sortBy as any }),
-    minPrice: priceRange[0],
-    maxPrice: priceRange[1],
-  };
-
-  const { data: products, isLoading } = useListProducts(queryParams, {
-    query: { queryKey: getListProductsQueryKey(queryParams) }
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortBy === "price_asc") return a.price - b.price;
+    if (sortBy === "price_desc") return b.price - a.price;
+    if (sortBy === "name") return a.name.localeCompare(b.name);
+    return 0;
   });
+
+  const products = sortedProducts;
+  const isLoading = false;
 
   const FilterContent = () => (
     <div className="space-y-8">
@@ -96,7 +98,6 @@ export default function Catalog() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-12">
-        {/* Desktop Filters */}
         <aside className="hidden lg:block w-64 shrink-0">
           <FilterContent />
         </aside>
@@ -144,42 +145,4 @@ export default function Catalog() {
             </div>
           </div>
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="space-y-4">
-                  <Skeleton className="w-full aspect-[3/4] rounded-none" />
-                  <Skeleton className="h-6 w-2/3 rounded-none" />
-                  <Skeleton className="h-4 w-1/3 rounded-none" />
-                </div>
-              ))}
-            </div>
-          ) : products?.length === 0 ? (
-            <div className="py-24 text-center border border-border bg-white">
-              <h3 className="font-serif text-2xl mb-2">Ничего не найдено</h3>
-              <p className="text-muted-foreground mb-6">Попробуйте изменить параметры поиска или фильтры</p>
-              <Button 
-                variant="outline" 
-                className="rounded-none"
-                onClick={() => {
-                  setSearch("");
-                  setDebouncedSearch("");
-                  setCategory("all");
-                  setPriceRange([0, 20000]);
-                }}
-              >
-                Сбросить фильтры
-              </Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products?.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+          {isLoading
