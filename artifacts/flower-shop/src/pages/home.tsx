@@ -1,16 +1,48 @@
-import { useGetFeaturedProducts, getGetFeaturedProductsQueryKey } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, Leaf, Heart, Sparkles, Star } from "lucide-react";
+import { ArrowRight, Leaf, Heart, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ProductCard } from "@/components/product-card";
+
+const featuredProducts = [
+  {
+    id: 1,
+    name: "Букет «Розовая мечта»",
+    price: 3500,
+    imageUrl: "https://picsum.photos/seed/flower1/400/500",
+    category: "Розы",
+    inStock: true,
+    isFeatured: true
+  },
+  {
+    id: 2,
+    name: "Букет «Солнечный день»",
+    price: 2800,
+    imageUrl: "https://picsum.photos/seed/flower2/400/500",
+    category: "Подсолнухи",
+    inStock: true,
+    isFeatured: true
+  },
+  {
+    id: 3,
+    name: "Букет «Весенний сад»",
+    price: 4200,
+    imageUrl: "https://picsum.photos/seed/flower3/400/500",
+    category: "Тюльпаны",
+    inStock: true,
+    isFeatured: true
+  },
+  {
+    id: 4,
+    name: "Букет «Элегантность»",
+    price: 5500,
+    imageUrl: "https://picsum.photos/seed/flower4/400/500",
+    category: "Лилии",
+    inStock: true,
+    isFeatured: true
+  }
+];
 
 export default function Home() {
-  const { data: featuredProducts, isLoading } = useGetFeaturedProducts({
-    query: { queryKey: getGetFeaturedProductsQueryKey() }
-  });
-
   return (
     <div className="w-full">
       {/* Hero Section */}
@@ -40,39 +72,10 @@ export default function Home() {
               <Button asChild size="lg" variant="outline" className="rounded-none px-8 text-base h-14 bg-transparent border-primary/20 hover:bg-primary/5">
                 <Link href="/ai" className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-primary" />
-                  Подобрать с ИИ
+                  AI Флорист
                 </Link>
               </Button>
             </div>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-            className="relative h-[600px] hidden md:block"
-          >
-            <div className="absolute inset-0 bg-primary/5 rounded-t-full rounded-b-[400px] overflow-hidden border border-primary/10">
-              <img 
-                src="/images/bouquet-1.png" 
-                alt="Beautiful bouquet" 
-                className="w-full h-full object-cover object-center mix-blend-multiply opacity-90"
-              />
-            </div>
-            {/* Floating badge */}
-            <motion.div 
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -left-8 top-1/3 bg-white p-4 shadow-xl border border-border flex items-center gap-4"
-            >
-              <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-primary">
-                <Heart className="w-6 h-6 fill-current" />
-              </div>
-              <div>
-                <p className="text-sm font-bold">Сделано с любовью</p>
-                <p className="text-xs text-muted-foreground">Каждый цветок отобран вручную</p>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -90,31 +93,37 @@ export default function Home() {
             </Link>
           </div>
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="space-y-4">
-                  <Skeleton className="w-full aspect-[3/4] rounded-none" />
-                  <Skeleton className="h-6 w-2/3 rounded-none" />
-                  <Skeleton className="h-4 w-1/3 rounded-none" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {featuredProducts?.slice(0, 4).map((product, i) => (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  key={product.id}
-                >
-                  <ProductCard product={product} />
-                </motion.div>
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {featuredProducts.map((product, i) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Link href={`/product/${product.id}`} className="group block relative">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-secondary/10 mb-4 border border-border/50">
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+                    />
+                    {product.isFeatured && (
+                      <div className="absolute top-3 left-3 bg-white px-3 py-1 text-xs uppercase tracking-wider font-medium shadow-sm">
+                        Хит
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-xl mb-1 group-hover:text-primary transition-colors">{product.name}</h3>
+                    <p className="text-muted-foreground text-sm mb-2 uppercase tracking-wider">{product.category}</p>
+                    <p className="text-lg font-medium">{product.price.toLocaleString('ru-RU')} ₽</p>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
           
           <div className="mt-12 text-center md:hidden">
             <Button asChild variant="outline" className="rounded-none w-full border-primary/20">
@@ -156,22 +165,6 @@ export default function Home() {
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-32 relative overflow-hidden bg-primary text-primary-foreground">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1563241527-3004b7be0ffd')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <h2 className="font-serif text-4xl md:text-5xl mb-6 max-w-2xl mx-auto leading-tight">
-            Подарите эмоции, которые запомнятся
-          </h2>
-          <p className="text-primary-foreground/80 mb-10 max-w-xl mx-auto text-lg">
-            Оформите заказ сейчас, и мы доставим букет в течение 2 часов в любую точку Москвы.
-          </p>
-          <Button asChild size="lg" variant="secondary" className="rounded-none px-10 h-14 text-base bg-white text-primary hover:bg-white/90">
-            <Link href="/catalog">Выбрать букет</Link>
-          </Button>
         </div>
       </section>
     </div>
