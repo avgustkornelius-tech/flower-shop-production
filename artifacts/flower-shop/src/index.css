@@ -1,0 +1,103 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  /* Warm feminine tactile - blush, deep rose, sage */
+  --background: 15 30% 97%; /* Soft blush warm white */
+  --foreground: 350 20% 20%; /* Dark earthy brown/rose */
+  
+  --card: 0 0% 100%;
+  --card-foreground: 350 20% 20%;
+  --card-border: 15 20% 90%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 350 20% 20%;
+  --popover-border: 15 20% 90%;
+
+  --primary: 345 35% 35%; /* Deep rose/burgundy */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 130 15% 65%; /* Sage green */
+  --secondary-foreground: 130 25% 15%;
+
+  --muted: 15 20% 92%;
+  --muted-foreground: 350 10% 45%;
+
+  --accent: 15 35% 85%; /* Soft peach/blush */
+  --accent-foreground: 350 30% 25%;
+
+  --destructive: 0 60% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 15 20% 90%;
+  --input: 15 20% 88%;
+  --ring: 345 35% 35%;
+
+  --app-font-sans: 'Cormorant Garamond', 'Playfair Display', serif; /* Or we can use a nice serif for headings and a clean sans for body. Let's use serif overall for boutique feel */
+  --app-font-serif: 'Cormorant Garamond', 'Playfair Display', serif;
+  --app-font-mono: 'Space Mono', monospace;
+  
+  --radius: 0rem; /* Sharp elegant edges for boutique feel */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--app-font-serif);
+    font-weight: 500;
+  }
+}
