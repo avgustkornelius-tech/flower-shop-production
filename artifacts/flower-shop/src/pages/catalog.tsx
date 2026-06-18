@@ -25,7 +25,7 @@ export default function Catalog() {
   };
 
   const summary = mockSummary;
-  
+
   const filteredProducts = mockProducts.filter(product => {
     const matchesSearch = !debouncedSearch || product.name.toLowerCase().includes(debouncedSearch.toLowerCase());
     const matchesCategory = category === "all" || product.category === category;
@@ -93,7 +93,7 @@ export default function Catalog() {
       <div className="mb-12">
         <h1 className="font-serif text-5xl mb-4">Каталог</h1>
         <p className="text-muted-foreground text-lg max-w-2xl">
-          Свежие авторские букеты для любого повода. Выберите идеальную композицию или воспользуйтесь нашим AI-помощником.
+          Свежие авторские букеты для любого повода.
         </p>
       </div>
 
@@ -106,9 +106,9 @@ export default function Catalog() {
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
             <div className="relative w-full sm:max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input 
-                type="search" 
-                placeholder="Поиск букетов..." 
+              <Input
+                type="search"
+                placeholder="Поиск букетов..."
                 className="pl-10 rounded-none border-border/50 bg-white"
                 value={search}
                 onChange={handleSearch}
@@ -145,4 +145,25 @@ export default function Catalog() {
             </div>
           </div>
 
-          {isLoading
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="w-full aspect-[3/4] rounded-none" />
+                  <Skeleton className="h-6 w-2/3 rounded-none" />
+                  <Skeleton className="h-4 w-1/3 rounded-none" />
+                </div>
+              ))}
+            </div>
+          ) : products?.length === 0 ? (
+            <div className="py-24 text-center border border-border bg-white">
+              <h3 className="font-serif text-2xl mb-2">Ничего не найдено</h3>
+              <p className="text-muted-foreground mb-6">Попробуйте изменить параметры поиска или фильтры</p>
+              <Button
+                variant="outline"
+                className="rounded-none"
+                onClick={() => {
+                  setSearch("");
+                  setDebouncedSearch("");
+                  setCategory("all");
+                  set
